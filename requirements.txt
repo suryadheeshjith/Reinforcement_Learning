@@ -1,0 +1,10 @@
+atari-py          0.2.6
+box2d-py          2.3.8
+gym               0.18.0
+matplotlib        3.3.4
+numpy             1.19.5
+opencv-python     4.5.1.48
+pyglet            1.5.11
+scipy             1.5.4
+torch             1.8.1
+torchvision       0.9.1
