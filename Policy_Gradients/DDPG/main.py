@@ -11,7 +11,7 @@ if __name__ == "__main__":
     load_chkpt = False
     env = gym.make('LunarLanderContinuous-v2')
     agent = Agent(alpha=0.0001, beta=0.001, input_dims = env.observation_space.shape, tau=0.001,
-                    action_dims = env.action_space.shape[0], name = 'DDPG', chkptdir= 'models') # lr = 5e-6, input_dims=[8], fc1_dims = 256, fc2_dims = 256
+                    action_dims = env.action_space.shape[0], name = 'DDPG', chkptdir= 'models')
 
     if load_chkpt:
         agent.load_models()
@@ -46,7 +46,7 @@ if __name__ == "__main__":
         avg_score = np.mean(scores[-100:])
         print('Episode ', i+1, 'score %.2f' % score, 'avg score %.2f' % avg_score)
 
-        
+
         if i >= 99:
             if avg_score > best_score:
                 best_score = avg_score
