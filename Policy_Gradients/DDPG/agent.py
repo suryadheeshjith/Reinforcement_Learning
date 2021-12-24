@@ -92,7 +92,8 @@ class Agent():
 
         self.actor.optimizer.zero_grad()
         actor_loss = - self.critic.forward(statest, self.actor.forward(statest)) # First, negative due to gradient ascent. Second, be
-                                                                                 # careful not to get confused with critic_values. Actions                                                                         # must be sampled from target clearly shown in algorithm
+                                                                                 # careful not to get confused with critic_values. Actions
+                                                                                 # must be sampled from target clearly shown in algorithm
         actor_loss = T.mean(actor_loss)
         actor_loss.backward()
         self.actor.optimizer.step()
