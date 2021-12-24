@@ -68,11 +68,11 @@ class Critic(nn.Module):
 
     def save_checkpoint(self):
         print('... saving checkpoint ...')
-        T.save(self.state_dict(), self.chkptfile+'_critic')
+        T.save(self.state_dict(), self.chkptfile+'_critic.zip')
 
     def load_checkpoint(self):
         print('... loading checkpoint ...')
-        self.load_state_dict(T.load(self.chkptfile+'_critic'))
+        self.load_state_dict(T.load(self.chkptfile+'_critic.zip', map_location={'cuda:0': 'cpu'}))
 
 
 
@@ -129,8 +129,8 @@ class Actor(nn.Module):
 
     def save_checkpoint(self):
         print('... saving checkpoint ...')
-        T.save(self.state_dict(), self.chkptfile+'_actor')
+        T.save(self.state_dict(), self.chkptfile+'_actor.zip')
 
     def load_checkpoint(self):
         print('... loading checkpoint ...')
-        self.load_state_dict(T.load(self.chkptfile+'_actor'))
+        self.load_state_dict(T.load(self.chkptfile+'_actor.zip', map_location={'cuda:0': 'cpu'}))

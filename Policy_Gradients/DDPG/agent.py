@@ -73,28 +73,26 @@ class Agent():
         states_t = T.tensor(states_, dtype = T.float).to(self.actor.device)
         donest = T.tensor(dones).to(self.actor.device)
 
+        # Calculation of target Q
         target_actions = self.target_actor.forward(states_t)
         critic_values_ = self.target_critic.forward(states_t,target_actions)
+        critic_values_[donest] = 0.0
+        critic_values_ = critic_values_.view(-1)
+        target = rewardst + self.gamma * critic_values_
+        target = target.view(self.batch_size, 1)
+
+        # Calculation of Current Q
         critic_values = self.critic.forward(statest,actionst)
 
-        critic_values_[donest] = 0.0
-        critic_values_ = critic_values_.view(-1)#
-
-        target = rewardst + self.gamma * critic_values_
-        target = target.view(self.batch_size, 1)#
-
         self.critic.optimizer.zero_grad()
-        critic_loss = F.mse_loss(target, critic_values)#
-
-        # critic_loss = np.sum((target - critic_vals)**2)/self.batch_size#
-
+        critic_loss = F.mse_loss(target, critic_values)
         critic_loss.backward()
         self.critic.optimizer.step()
 
+
         self.actor.optimizer.zero_grad()
         actor_loss = - self.critic.forward(statest, self.actor.forward(statest)) # First, negative due to gradient ascent. Second, be
-                                                                                 # careful not to get confused with critic_values. Actions
-                                                                                 # must be sampled from target clearly shown in algorithm
+                                                                                 # careful not to get confused with critic_values. Actions                                                                         # must be sampled from target clearly shown in algorithm
         actor_loss = T.mean(actor_loss)
         actor_loss.backward()
         self.actor.optimizer.step()

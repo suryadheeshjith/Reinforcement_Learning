@@ -8,7 +8,7 @@ if __name__ == "__main__":
 
     np.random.seed(0)
     n_games =1000
-    load_chkpt = False
+    load_chkpt = True
     env = gym.make('LunarLanderContinuous-v2')
     agent = Agent(alpha=0.0001, beta=0.001, input_dims = env.observation_space.shape, tau=0.001,
                     action_dims = env.action_space.shape[0], name = 'DDPG', chkptdir= 'models')
@@ -47,14 +47,13 @@ if __name__ == "__main__":
         print('Episode ', i+1, 'score %.2f' % score, 'avg score %.2f' % avg_score)
 
 
-        if i >= 99:
-            if avg_score > best_score:
-                best_score = avg_score
-                if not load_chkpt:
-                    agent.save_models()
+        if i>99 and avg_score > best_score:
+            best_score = avg_score
+            if not load_chkpt:
+                agent.save_models()
 
 
-        if load_chkpt and n_steps>30:
+        if load_chkpt and n_steps>3000:
             break
 
     x = [i+1 for i in range(len(scores))]
