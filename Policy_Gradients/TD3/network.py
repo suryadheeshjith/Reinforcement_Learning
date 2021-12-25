@@ -1,0 +1,86 @@
+import torch as T
+import torch.nn as nn
+import torch.nn.functional as F
+import torch.optim as optim
+import numpy as np
+
+from utils import get_path
+
+
+class Critic(nn.Module):
+    def __init__(self, input_dims, action_dims, name, chkptdir, fc1_dims, fc2_dims, lr=0.001):
+        super().__init__()
+
+        self.input_dims = input_dims
+        self.action_dims = action_dims
+        self.name = name
+        self.chkptdir = chkptdir
+        self.chkptfile = get_path(chkptdir, name)
+
+        self.fc1_dims = fc1_dims
+        self.fc2_dims = fc2_dims
+
+        self.fc1 = nn.Linear(input_dims[0]+action_dims, self.fc1_dims) # Breaks with 2D state representation, fix accordingly
+        self.fc2 = nn.Linear(self.fc1_dims, self.fc2_dims)
+
+        self.q = nn.Linear(self.fc2_dims, 1)
+
+
+        self.optimizer = optim.Adam(self.parameters(), lr=lr)
+        self.device = T.device('cuda:0' if T.cuda.is_available() else 'cpu')
+        self.to(self.device)
+
+    def forward(self, state, action):
+        x = F.relu(self.fc1(T.cat([state,action],dim=-1))) # Breaks with 2D state representation, fix accordingly
+        x = F.relu(self.fc2(x))
+        ret = self.q(x)
+
+        return ret
+
+    def save_checkpoint(self):
+        print('... saving checkpoint ...')
+        T.save(self.state_dict(), self.chkptfile+'_critic.zip')
+
+    def load_checkpoint(self):
+        print('... loading checkpoint ...')
+        self.load_state_dict(T.load(self.chkptfile+'_critic.zip', map_location={'cuda:0': 'cpu'}))
+
+
+
+class Actor(nn.Module):
+    def __init__(self, input_dims, action_dims, name, chkptdir, fc1_dims, fc2_dims, lr=0.001):
+        super().__init__()
+        self.input_dims = input_dims
+        self.action_dims = action_dims
+        self.name = name
+        self.chkptdir = chkptdir
+        self.chkptfile = get_path(chkptdir, name)
+
+        self.fc1_dims = fc1_dims
+        self.fc2_dims = fc2_dims
+
+
+        self.fc1 = nn.Linear(*input_dims, self.fc1_dims)
+        self.fc2 = nn.Linear(self.fc1_dims, self.fc2_dims)
+
+        self.mu = nn.Linear(self.fc2_dims, action_dims)
+
+        self.optimizer = optim.Adam(self.parameters(), lr=lr)
+        self.device = T.device('cuda:0' if T.cuda.is_available() else 'cpu')
+        self.to(self.device)
+
+    def forward(self, state):
+        x = F.relu(self.fc1(state))
+        x = F.relu(self.fc2(x))
+
+        x = T.tanh(self.mu(x)) # -1 to +1 bound actions
+
+        return x
+
+    def save_checkpoint(self):
+        print('... saving checkpoint ...')
+        T.save(self.state_dict(), self.chkptfile+'_actor.zip')
+
+    def load_checkpoint(self):
+        print('... loading checkpoint ...')
+        self.load_state_dict(T.load(self.chkptfile+'_actor.zip', map_location={'cuda:0': 'cpu'}))
