@@ -9,7 +9,7 @@ if __name__ == "__main__":
 
     np.random.seed(0)
     n_games =1500
-    load_chkpt = False
+    load_chkpt = True
     env = gym.make('BipedalWalker-v3')
     agent = Agent(env, alpha=0.001, beta=0.001, input_dims = env.observation_space.shape,
                     action_dims = env.action_space.shape[0], name = 'TD3')
@@ -53,7 +53,7 @@ if __name__ == "__main__":
                 agent.save_models()
 
 
-        if load_chkpt and n_steps>3000:
+        if load_chkpt and n_steps>6000:
             break
 
     x = [i+1 for i in range(len(scores))]
