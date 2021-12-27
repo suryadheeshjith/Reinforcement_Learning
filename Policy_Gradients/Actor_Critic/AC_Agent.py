@@ -30,7 +30,7 @@ class Agent():
         _, critic_statevalue = self.actor_critic.forward(statet)
         _, critic_state_value = self.actor_critic.forward(state_t)
 
-        delta = reward + self.gamma * critic_state_value * (1-int(done)) - critic_statevalue#1
+        delta = reward + self.gamma * critic_state_value * (1-int(done)) - critic_statevalue
 
         actor_loss = -self.log_prob * delta
         critic_loss = delta**2
