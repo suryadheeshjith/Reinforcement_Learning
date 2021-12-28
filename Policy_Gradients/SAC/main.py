@@ -9,10 +9,10 @@ if __name__ == "__main__":
 
     np.random.seed(0)
 
-    #env_id = 'LunarLanderContinuous-v2'
+    env_id = 'LunarLanderContinuous-v2'
     #env_id = 'BipedalWalker-v2'
     #env_id = 'AntBulletEnv-v0'
-    env_id = 'InvertedPendulumBulletEnv-v0'
+    # env_id = 'InvertedPendulumBulletEnv-v0'
     #env_id = 'CartPoleContinuousBulletEnv-v0'
 
     n_games =250
@@ -40,6 +40,8 @@ if __name__ == "__main__":
             agent.store_transition(observation, action, reward, observation_, done)
             if not load_chkpt:
                 agent.learn()
+            else:
+                env.render()
 
             score += reward
             observation = observation_
